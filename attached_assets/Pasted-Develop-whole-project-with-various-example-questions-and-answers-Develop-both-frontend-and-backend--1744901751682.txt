@@ -1,0 +1,67 @@
+Develop whole project with various example questions and answers. Develop both frontend and backend according to the requirements given below and make the project UI more colorful and user interactive, use angular 16 to develop this project and make it work efficiently. Fulfill all the requirements for frontend, backend, database, API Endpoints and additional requirements given below:
+
+Project Title: Discussion Forum Objective Develop a web-based discussion forum where users can post questions, reply to discussions, and like answers using Angular, Node.js (TypeScript), and MySQL.
+
+📌 Features & Functional Requirements 🔹 1. User Roles (No Authentication Required) ● Any user can browse questions and answers.
+
+● Users can post questions, reply to questions, and like answers without requiring login.
+
+🔹 2. Question Management Users can: ✅ Post new questions with: ● Question Title (Text, Required)
+
+● Description (Text, Required)
+
+● Tags (Optional, comma-separated values) ✅ View all posted questions. ✅ Search questions by keyword or tag. ✅ Filter questions by latest or most liked.
+
+📝 Expected UI: ● A homepage listing all questions.
+
+● A page to view individual questions and replies.
+
+● A form to post a new question.
+
+🔹 3. Answer Management Users can: ✅ Post answers to questions. ✅ Like answers to promote quality responses. ✅ View the number of likes per answer. ✅ Fetch all answers for a specific question. 📝 Expected UI: ● A detailed question page displaying:
+
+○ Question details
+
+○ All answers
+
+○ A reply form
+
+○ A like button for each answer
+
+📌 Frontend Requirements (Angular 16) ✅ Use Angular Material for UI components. ✅ Maintain a structured folder hierarchy. 🔹 Suggested Components 1️⃣ QuestionListComponent → Displays all questions. 2️⃣ QuestionDetailsComponent → Shows a selected question and its answers. 3️⃣ QuestionFormComponent → Form for creating a new question. 4️⃣ AnswerFormComponent → Form for posting an answer. 5️⃣ LikeButtonComponent → Button to like an answer. 🔹 Suggested Routes Path Component Description /questions QuestionListComponent Displays all questions /questions/new QuestionFormComponent Post a new question /questions/:id QuestionDetailsComponent View a specific question and its answers
+
+📌 Backend Requirements (Node.js + TypeScript + Express) ✅ Create a REST API for managing questions and answers. ✅ Use MySQL as the database. ✅ Implement CRUD operations (Create, Read, Update, Delete). ✅ Ensure error handling and validation (e.g., required fields).
+
+📌 Database Structure (MySQL) 🔹 Questions Table Column Name Data Type Constraints id INT PRIMARY KEY, AUTO_INCREMENT title VARCHAR(255) NOT NULL description TEXT NOT NULL tags VARCHAR(255) NULL created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP 🔹 Answers Table Column Name Data Type Constraints id INT PRIMARY KEY, AUTO_INCREMENT question_id INT FOREIGN KEY REFERENCES questions(id) answer_text TEXT NOT NULL likes INT DEFAULT 0 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+📌 API Endpoints 🔹 Question API Method Endpoint Description GET /api/questions Get all questions POST /api/questions Create a new question GET
+
+GET
+
+GET
+
+GET /api/questions/:id
+
+/api/questions/search
+
+/api/questions/tag/:tag
+
+/api/questions/recent Get a specific question
+
+Search questions by keyword
+
+Get Questions by tag
+
+Get the most recently asked questions 🔹 Answer API Method Endpoint Description GET /api/questions/:id/answers Get all answers for a question POST /api/questions/:id/answers Post an answer to a question PUT /api/answers/:id/reaction React to an answer (Like or Dislike) using the request body. DELETE /api/answers/:id Delete an answer
+
+📌 Additional Requirements 1️⃣ Validation Requirements ● Ensure required fields like question title and answer text are mandatory.
+
+● Restrict maximum length for text fields.
+
+2️⃣ Error Handling ● Handle server errors and show proper error messages in the UI.
+
+● Use proper HTTP status codes in API responses.
+
+3️⃣ UI Feedback ● Show success notifications when questions or answers are posted.
+
+● Show error alerts if something goes wrong.
