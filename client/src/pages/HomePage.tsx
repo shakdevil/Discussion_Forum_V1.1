@@ -97,11 +97,15 @@ export function HomePage() {
         <div className="flex items-center gap-2">
           <h1 className="text-3xl font-bold gradient-heading">Discussion Forum</h1>
           {/* WebSocket connection status */}
-          <div className="flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-opacity-10" title="Real-time updates">
+          <div className="flex items-center gap-1 text-xs px-2 py-1 rounded-full" title="Real-time updates">
             {readyState === WebSocket.OPEN ? (
-              <><Wifi className="h-3 w-3 text-green-500" /><span className="text-green-500">Live</span></>
+              <div className="flex items-center gap-1 bg-green-100 px-2 py-0.5 rounded-full">
+                <Wifi className="h-3 w-3 text-green-700" /><span className="text-green-700 font-medium">Live</span>
+              </div>
             ) : (
-              <><WifiOff className="h-3 w-3 text-gray-400" /><span className="text-gray-400">Offline</span></>
+              <div className="flex items-center gap-1 bg-red-100 px-2 py-0.5 rounded-full">
+                <WifiOff className="h-3 w-3 text-red-700" /><span className="text-red-700 font-medium">Offline</span>
+              </div>
             )}
           </div>
         </div>
