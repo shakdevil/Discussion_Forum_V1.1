@@ -1,0 +1,31 @@
+<div class="app-container">
+  <mat-toolbar color="primary" class="app-toolbar">
+    <div class="toolbar-container">
+      <a routerLink="/" class="logo-container">
+        <mat-icon>forum</mat-icon>
+        <span class="app-title">Discussion Forum</span>
+      </a>
+      <div class="toolbar-actions">
+        <a mat-button routerLink="/" class="nav-link">
+          <mat-icon>home</mat-icon>
+          <span>Home</span>
+        </a>
+        <a mat-raised-button color="accent" routerLink="/ask" class="ask-button">
+          <mat-icon>add</mat-icon>
+          <span>Ask Question</span>
+        </a>
+      </div>
+    </div>
+  </mat-toolbar>
+
+  <main class="app-content">
+    <router-outlet></router-outlet>
+  </main>
+
+  <footer class="app-footer">
+    <div class="footer-content">
+      <p>Discussion Forum &copy; {{currentYear}}</p>
+      <p>A place to ask questions and share knowledge</p>
+    </div>
+  </footer>
+</div>

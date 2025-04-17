@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .question-card {
+    @apply p-4 mb-4 rounded-lg border shadow-sm hover:shadow-md transition-shadow;
+  }
+  
+  .question-title {
+    @apply text-xl font-bold mb-2;
+  }
+  
+  .question-description {
+    @apply text-gray-600 mb-4;
+  }
+  
+  .question-meta {
+    @apply text-sm text-gray-500 flex items-center gap-2;
+  }
+  
+  .tag {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/20 text-primary-foreground/80 mr-2;
+  }
+  
+  .answer-card {
+    @apply p-4 mb-3 rounded-lg border bg-secondary/10;
+  }
+  
+  .answer-text {
+    @apply mb-3;
+  }
+  
+  .answer-meta {
+    @apply text-sm text-gray-500 flex items-center justify-between;
+  }
+}
