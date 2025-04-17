@@ -67,6 +67,37 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(questions.created_at))
       .limit(10);
   }
+  
+  async getPopularTags(limit: number = 10): Promise<{ tag: string; count: number }[]> {
+    // Get all questions with tags
+    const allQuestions = await db
+      .select({ tags: questions.tags })
+      .from(questions)
+      .where(sql`${questions.tags} IS NOT NULL`);
+    
+    // Process tags
+    const tagCounts = new Map<string, number>();
+    
+    allQuestions.forEach(question => {
+      if (question.tags) {
+        const tags = question.tags.split(',').map(tag => tag.trim());
+        tags.forEach(tag => {
+          if (tag) {
+            const count = tagCounts.get(tag) || 0;
+            tagCounts.set(tag, count + 1);
+          }
+        });
+      }
+    });
+    
+    // Convert to array and sort by count (descending)
+    const sortedTags = Array.from(tagCounts.entries())
+      .map(([tag, count]) => ({ tag, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, limit);
+    
+    return sortedTags;
+  }
 
   // Answer methods
   async getAnswersByQuestionId(questionId: number): Promise<Answer[]> {

@@ -17,6 +17,7 @@ export interface IStorage {
   searchQuestions(keyword: string): Promise<Question[]>;
   getQuestionsByTag(tag: string): Promise<Question[]>;
   getRecentQuestions(): Promise<Question[]>;
+  getPopularTags(limit?: number): Promise<{ tag: string; count: number }[]>;
   
   // Answer methods
   getAnswersByQuestionId(questionId: number): Promise<Answer[]>;
@@ -98,6 +99,35 @@ export class MemStorage implements IStorage {
         const dateB = b.created_at instanceof Date ? b.created_at : new Date(b.created_at);
         return dateB.getTime() - dateA.getTime();
       });
+  }
+  
+  async getPopularTags(limit: number = 10): Promise<{ tag: string; count: number }[]> {
+    // Get all questions
+    const questions = Array.from(this.questions.values());
+    
+    // Create a map to count tag occurrences
+    const tagCounts = new Map<string, number>();
+    
+    // Count occurrences of each tag
+    questions.forEach(question => {
+      if (question.tags) {
+        const tags = question.tags.split(',').map(tag => tag.trim());
+        tags.forEach(tag => {
+          if (tag) {
+            const count = tagCounts.get(tag) || 0;
+            tagCounts.set(tag, count + 1);
+          }
+        });
+      }
+    });
+    
+    // Convert to array and sort by count (descending)
+    const sortedTags = Array.from(tagCounts.entries())
+      .map(([tag, count]) => ({ tag, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, limit);
+    
+    return sortedTags;
   }
 
   // Answer methods
