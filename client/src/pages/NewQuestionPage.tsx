@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import React, { useState, useEffect } from 'react';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { InsertQuestion } from '@shared/schema';
-import { ArrowLeft, X, HelpCircle } from 'lucide-react';
+import { ArrowLeft, X, HelpCircle, Tag } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
 export function NewQuestionPage() {
@@ -10,12 +10,23 @@ export function NewQuestionPage() {
   const [description, setDescription] = useState('');
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>([]);
+  const [showTagSuggestions, setShowTagSuggestions] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{
     title?: string;
     description?: string;
     tags?: string;
   }>({});
+  
+  // Fetch popular tags
+  const { data: popularTags, isLoading: tagsLoading } = useQuery({
+    queryKey: ['/api/tags/popular'],
+    queryFn: async () => {
+      const res = await apiRequest('GET', '/api/tags/popular?limit=10');
+      return res.json();
+    },
+    staleTime: 60 * 1000, // 1 minute
+  });
 
   // Create question mutation
   const createQuestionMutation = useMutation({
@@ -35,6 +46,12 @@ export function NewQuestionPage() {
     }
   });
 
+  // Handle tag input change 
+  const handleTagInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTagInput(e.target.value);
+    setShowTagSuggestions(e.target.value.length > 0);
+  };
+  
   // Add a tag
   const addTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' || e.key === ',') {
@@ -44,7 +61,19 @@ export function NewQuestionPage() {
       if (tag && !tags.includes(tag) && tags.length < 5) {
         setTags([...tags, tag]);
         setTagInput('');
+        setShowTagSuggestions(false);
       }
+    } else if (e.key === 'Escape') {
+      setShowTagSuggestions(false);
+    }
+  };
+  
+  // Add a suggested tag
+  const addSuggestedTag = (tag: string) => {
+    if (!tags.includes(tag) && tags.length < 5) {
+      setTags([...tags, tag]);
+      setTagInput('');
+      setShowTagSuggestions(false);
     }
   };
 
@@ -162,26 +191,55 @@ export function NewQuestionPage() {
           </label>
           <div className={`flex flex-wrap items-center gap-2 p-2 rounded-md border ${errors.tags ? 'border-red-500' : 'border-input'}`}>
             {tags.map((tag, index) => (
-              <div key={index} className="tag flex items-center">
+              <div key={index} className="tag flex items-center bg-primary/10 text-primary-foreground px-2 py-1 rounded text-sm">
+                <Tag className="h-3 w-3 mr-1 opacity-70" />
                 <span>{tag}</span>
                 <button 
                   type="button" 
                   onClick={() => removeTag(tag)}
-                  className="ml-1 text-muted-foreground hover:text-foreground"
+                  className="ml-1 text-primary-foreground/70 hover:text-primary-foreground"
                 >
                   <X className="h-3 w-3" />
                 </button>
               </div>
             ))}
-            <input
-              id="tags"
-              type="text"
-              className="flex-1 min-w-[100px] outline-none bg-transparent text-sm"
-              placeholder={tags.length === 0 ? "Add up to 5 tags" : ""}
-              value={tagInput}
-              onChange={(e) => setTagInput(e.target.value)}
-              onKeyDown={addTag}
-            />
+            <div className="relative flex-1">
+              <input
+                id="tags"
+                type="text"
+                className="w-full min-w-[100px] outline-none bg-transparent text-sm"
+                placeholder={tags.length === 0 ? "Add up to 5 tags" : ""}
+                value={tagInput}
+                onChange={handleTagInputChange}
+                onKeyDown={addTag}
+                onBlur={() => setTimeout(() => setShowTagSuggestions(false), 100)}
+              />
+              
+              {/* Tag suggestions dropdown */}
+              {showTagSuggestions && popularTags && popularTags.length > 0 && (
+                <div className="absolute left-0 top-6 z-10 w-full bg-background border rounded-md shadow-md p-1 mt-1">
+                  {popularTags
+                    .filter(tag => 
+                      tag.tag.toLowerCase().includes(tagInput.toLowerCase()) && 
+                      !tags.includes(tag.tag)
+                    )
+                    .slice(0, 5)
+                    .map((tag, index) => (
+                      <div 
+                        key={index}
+                        className="flex items-center p-1.5 hover:bg-muted rounded cursor-pointer"
+                        onClick={() => addSuggestedTag(tag.tag)}
+                      >
+                        <Tag className="h-3 w-3 mr-2 opacity-70" />
+                        <span className="text-sm">{tag.tag}</span>
+                        <span className="text-xs text-muted-foreground ml-auto">
+                          {tag.count}
+                        </span>
+                      </div>
+                    ))}
+                </div>
+              )}
+            </div>
           </div>
           {errors.tags && <p className="text-red-500 text-xs mt-1">{errors.tags}</p>}
           <p className="text-xs text-muted-foreground mt-1">

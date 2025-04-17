@@ -91,6 +91,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Error fetching recent questions" });
     }
   });
+  
+  // Tags API route
+  app.get("/api/tags/popular", async (req: Request, res: Response) => {
+    try {
+      const limitStr = req.query.limit as string | undefined;
+      const limit = limitStr ? parseInt(limitStr) : 10;
+      
+      const tags = await storage.getPopularTags(limit);
+      res.status(200).json(tags);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching popular tags" });
+    }
+  });
 
   // Answer API routes
   app.get("/api/questions/:id/answers", async (req: Request, res: Response) => {
