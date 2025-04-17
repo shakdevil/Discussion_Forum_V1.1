@@ -1,12 +1,46 @@
-import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState, useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Question } from '@shared/schema';
 import { apiRequest } from '@/lib/queryClient';
-import { Calendar, Search, Tag } from 'lucide-react';
+import { Calendar, Search, Tag, Wifi, WifiOff } from 'lucide-react';
+import { useWebSocket } from '../hooks/use-websocket';
+import { useToast } from '../hooks/use-toast';
 
 export function HomePage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+  
+  // WebSocket connection
+  const { lastEvent, readyState } = useWebSocket();
+  
+  // Handle WebSocket events
+  useEffect(() => {
+    if (lastEvent) {
+      switch (lastEvent.type) {
+        case 'NEW_QUESTION':
+          // Invalidate questions cache to refresh the list
+          queryClient.invalidateQueries({ queryKey: ['/api/questions'] });
+          toast({
+            title: "New Question Posted",
+            description: `${lastEvent.payload.title}`,
+            duration: 3000,
+          });
+          break;
+        case 'NEW_ANSWER':
+          toast({
+            title: "New Answer Added",
+            description: "Someone answered a question",
+            duration: 3000,
+          });
+          break;
+        case 'LIKE_ANSWER':
+          // We don't need to update the UI for likes on home page
+          break;
+      }
+    }
+  }, [lastEvent, queryClient, toast]);
 
   // Fetch all questions
   const { data: questions, isLoading } = useQuery({
@@ -60,7 +94,17 @@ export function HomePage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-        <h1 className="text-3xl font-bold">Discussion Forum</h1>
+        <div className="flex items-center gap-2">
+          <h1 className="text-3xl font-bold gradient-heading">Discussion Forum</h1>
+          {/* WebSocket connection status */}
+          <div className="flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-opacity-10" title="Real-time updates">
+            {readyState === WebSocket.OPEN ? (
+              <><Wifi className="h-3 w-3 text-green-500" /><span className="text-green-500">Live</span></>
+            ) : (
+              <><WifiOff className="h-3 w-3 text-gray-400" /><span className="text-gray-400">Offline</span></>
+            )}
+          </div>
+        </div>
         
         {/* Search Box */}
         <div className="relative">

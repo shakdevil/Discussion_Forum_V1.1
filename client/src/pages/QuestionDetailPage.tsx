@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { Question, Answer, InsertAnswer } from '@shared/schema';
-import { Calendar, Heart, ArrowLeft, Tag } from 'lucide-react';
+import { Calendar, Heart, ArrowLeft, Tag, Wifi, WifiOff } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import { useWebSocket } from '../hooks/use-websocket';
+import { useToast } from '../hooks/use-toast';
 
 type QuestionDetailPageProps = {
   params: { id: string };
@@ -13,6 +16,36 @@ export function QuestionDetailPage({ params }: QuestionDetailPageProps) {
   const queryClient = useQueryClient();
   const [answerText, setAnswerText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+  
+  // WebSocket connection
+  const { lastEvent, readyState } = useWebSocket();
+  
+  // Handle WebSocket events
+  useEffect(() => {
+    if (lastEvent) {
+      switch (lastEvent.type) {
+        case 'NEW_ANSWER':
+          // If the answer is for this question, refresh the answers
+          if (lastEvent.payload.questionId === questionId) {
+            queryClient.invalidateQueries({ queryKey: [`/api/questions/${questionId}/answers`] });
+            toast({
+              title: "New Answer Added",
+              description: "Someone answered this question",
+              duration: 3000,
+            });
+          }
+          break;
+        case 'LIKE_ANSWER':
+          // Refresh answers if the liked answer is in this question
+          const likedAnswer = lastEvent.payload as Answer;
+          if (likedAnswer.question_id === questionId) {
+            queryClient.invalidateQueries({ queryKey: [`/api/questions/${questionId}/answers`] });
+          }
+          break;
+      }
+    }
+  }, [lastEvent, questionId, queryClient, toast]);
 
   // Fetch question details
   const { data: question, isLoading: questionLoading } = useQuery({
