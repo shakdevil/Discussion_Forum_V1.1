@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { InsertQuestion } from '@shared/schema';
-import { ArrowLeft, X } from 'lucide-react';
+import { ArrowLeft, X, HelpCircle } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 
 export function NewQuestionPage() {
   const [title, setTitle] = useState('');
@@ -127,16 +128,30 @@ export function NewQuestionPage() {
         
         {/* Description */}
         <div>
-          <label htmlFor="description" className="block text-sm font-medium mb-1">
-            Description
-          </label>
+          <div className="flex items-center justify-between">
+            <label htmlFor="description" className="block text-sm font-medium mb-1">
+              Description
+            </label>
+            <div className="tooltip flex items-center text-xs text-blue-600">
+              <HelpCircle className="h-4 w-4 mr-1" />
+              <span>Markdown supported</span>
+            </div>
+          </div>
           <textarea
             id="description"
             className={`w-full rounded-md border ${errors.description ? 'border-red-500' : 'border-input'} p-2 min-h-32 text-sm`}
-            placeholder="Include all the information someone would need to answer your question"
+            placeholder="Include all the information someone would need to answer your question. Markdown is supported (e.g. **bold**, *italic*, ```code blocks```, ## headings, etc.)"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           ></textarea>
+          {description && (
+            <div className="mt-3 p-3 border rounded-md">
+              <h4 className="text-sm font-medium mb-2">Preview:</h4>
+              <div className="markdown-content p-2 bg-gray-50 rounded">
+                <ReactMarkdown>{description}</ReactMarkdown>
+              </div>
+            </div>
+          )}
           {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description}</p>}
         </div>
         

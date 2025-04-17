@@ -164,7 +164,9 @@ export function QuestionDetailPage({ params }: QuestionDetailPageProps) {
         <div className="space-y-6">
           <div className="question-card">
             <h1 className="text-2xl font-bold mb-4">{question.title}</h1>
-            <p className="whitespace-pre-line mb-6">{question.description}</p>
+            <div className="markdown-content mb-6">
+              <ReactMarkdown>{question.description}</ReactMarkdown>
+            </div>
             
             {question.tags && (
               <div className="flex flex-wrap gap-2 mb-3">
@@ -203,7 +205,9 @@ export function QuestionDetailPage({ params }: QuestionDetailPageProps) {
             
             {sortedAnswers.map((answer) => (
               <div key={answer.id} className="answer-card">
-                <p className="answer-text whitespace-pre-line">{answer.answer_text}</p>
+                <div className="markdown-content answer-text">
+                  <ReactMarkdown>{answer.answer_text}</ReactMarkdown>
+                </div>
                 <div className="answer-meta">
                   <span className="flex items-center">
                     <Calendar className="h-4 w-4 mr-1" />
@@ -227,7 +231,7 @@ export function QuestionDetailPage({ params }: QuestionDetailPageProps) {
             <form onSubmit={handleSubmitAnswer}>
               <textarea
                 className="w-full rounded-md border border-input p-3 min-h-32 text-sm"
-                placeholder="Write your answer..."
+                placeholder="Write your answer... (Markdown is supported - use **bold**, *italic*, ```code```, etc.)"
                 value={answerText}
                 onChange={(e) => setAnswerText(e.target.value)}
                 required
