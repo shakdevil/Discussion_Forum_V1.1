@@ -1,7 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
-import { addSampleData } from "./sampleData";
+import { addDbSampleData } from "./dbSampleData";
 
 const app = express();
 app.use(express.json());
@@ -69,6 +69,6 @@ app.use((req, res, next) => {
     log(`serving on port ${port}`);
     
     // Add sample data for the discussion forum
-    addSampleData().catch(err => console.error('Error adding sample data:', err));
+    addDbSampleData().catch(err => console.error('Error adding sample data:', err));
   });
 })();
