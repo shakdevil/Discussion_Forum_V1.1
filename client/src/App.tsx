@@ -89,9 +89,9 @@ function App() {
           <MenuIcon className="h-6 w-6" />
         </Button>
         <div className="flex-1">
-          <h1 className="text-xl font-bold tracking-tight">Discussion Forum</h1>
+          <h1 className="text-xl font-bold tracking-tight gradient-heading">Discussion Forum</h1>
         </div>
-        <Button asChild size="sm" className="gap-1">
+        <Button asChild size="sm" className="gradient-button gap-1">
           <a href="/new">
             <Plus className="h-4 w-4" />
             <span>Ask Question</span>

@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --blue-tint: #4a6fe3;
+  --pink-tint: #e94c89;
+}
+
 @layer base {
   * {
     @apply border-border;
@@ -9,16 +14,47 @@
 
   body {
     @apply font-sans antialiased bg-background text-foreground;
+    background: linear-gradient(135deg, #f5f7ff 0%, #fff1f8 100%);
+  }
+
+  .gradient-heading {
+    background-image: linear-gradient(90deg, var(--blue-tint), var(--pink-tint));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: bold;
+  }
+  
+  .gradient-bg {
+    background: linear-gradient(135deg, #4a6fe3 0%, #e94c89 100%);
   }
 }
 
 @layer components {
   .question-card {
     @apply p-4 mb-4 rounded-lg border shadow-sm hover:shadow-md transition-shadow;
+    border-image: linear-gradient(to right, rgba(74, 111, 227, 0.2), rgba(233, 76, 137, 0.2)) 1;
   }
   
   .question-title {
-    @apply text-xl font-bold mb-2;
+    @apply text-xl mb-2;
+    background-image: linear-gradient(90deg, var(--blue-tint), var(--pink-tint));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: bold;
+  }
+  
+  .gradient-button {
+    @apply px-4 py-2 rounded-md text-white font-medium transition-all;
+    background: linear-gradient(90deg, var(--blue-tint), var(--pink-tint));
+  }
+  
+  .gradient-button:hover {
+    background: linear-gradient(90deg, var(--blue-tint), var(--pink-tint));
+    opacity: 0.9;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(74, 111, 227, 0.15);
   }
   
   .question-description {
@@ -30,11 +66,14 @@
   }
   
   .tag {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/20 text-primary-foreground/80 mr-2;
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mr-2;
+    background: linear-gradient(90deg, rgba(74, 111, 227, 0.2), rgba(233, 76, 137, 0.2));
+    color: #4a6fe3;
   }
   
   .answer-card {
-    @apply p-4 mb-3 rounded-lg border bg-secondary/10;
+    @apply p-4 mb-3 rounded-lg border;
+    background: linear-gradient(135deg, rgba(74, 111, 227, 0.05), rgba(233, 76, 137, 0.05));
   }
   
   .answer-text {
